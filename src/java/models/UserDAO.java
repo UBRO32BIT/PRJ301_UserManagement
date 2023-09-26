@@ -20,7 +20,7 @@ import java.util.List;
 public class UserDAO {
     private static final String LOGIN = "SELECT UserID, fullName, roleID FROM tblUsers WHERE userID=? AND password=?";
     private static final String SEARCH = "SELECT userID, fullName, roleID FROM tblUsers WHERE fullName LIKE ?";
-    
+    private static final String DELETE = "DELETE FROM tblUsers WHERE userID=?";
     public UserDTO checkLogin(String userID, String pwd) throws SQLException {
         Connection conn = null;
         PreparedStatement ptm = null;
@@ -76,6 +76,28 @@ public class UserDAO {
         }
         finally {
             if (rs!=null) rs.close();
+            if (ptm!=null) ptm.close();
+            if (conn!=null) conn.close();
+        }
+        return result;
+    }
+    
+    public boolean delete(String userID) throws SQLException{
+        Connection conn = null;
+        PreparedStatement ptm = null;
+        boolean result = false;
+        try {
+            conn = DBUtils.getConnection();
+            if (conn != null) {
+                ptm = conn.prepareStatement(DELETE);
+                ptm.setString(1, userID);
+                result = ptm.executeUpdate() > 0 ? true : false;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             if (ptm!=null) ptm.close();
             if (conn!=null) conn.close();
         }

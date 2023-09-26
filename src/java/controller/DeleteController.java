@@ -12,22 +12,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import models.UserDAO;
+import models.UserDTO;
 
 /**
  *
  * @author ubro3
  */
-@WebServlet(name = "MainController", urlPatterns = {"MainController"})
-public class MainController extends HttpServlet {
-    private static final String WELCOME_PAGE = "login.html";
-    
-    private static final String LOGIN = "Login";
-    private static final String SEARCH = "Search";
-    private static final String DELETE = "Delete";
-    private static final String LOGIN_CONTROLLER = "LoginController";
-    private static final String SEARCH_CONTROLLER = "SearchController";
-    private static final String DELETE_CONTROLLER = "DeleteController";
-    
+@WebServlet(name = "DeleteController", urlPatterns = {"/DeleteController"})
+public class DeleteController extends HttpServlet {
+    private static final String ERROR = "SearchController";
+    private static final String SUCCESS = "SearchController";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,24 +36,27 @@ public class MainController extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = WELCOME_PAGE;
+        String url = ERROR;
         try {
-            String action = request.getParameter("action");
-            if (action == null) {
-                url = WELCOME_PAGE;
-            }
-            else if (LOGIN.equals(action)) {
-                url = LOGIN_CONTROLLER;
-            }
-            else if (SEARCH.equals(action)) {
-                url = SEARCH_CONTROLLER;
-            }
-            else if (DELETE.equals(action)) {
-                url = DELETE_CONTROLLER;
+            String userID = request.getParameter("userID");
+            UserDAO dao = new UserDAO();
+            
+            HttpSession session = request.getSession();
+            UserDTO loginUser = (UserDTO) session.getAttribute("LOGIN_USER");
+            if (loginUser != null) {
+                if (loginUser.getUserID().equals(userID)) {
+                    request.setAttribute("ERROR", "e may dang cam acc nay ai cho xoa ha");
+                }
+                else {
+                    boolean checkDelete = dao.delete(userID);
+                    if (checkDelete) {
+                        url = SUCCESS;
+                    }
+                }
             }
         }
         catch (Exception e) {
-            log("Error at MainController " + e.toString());
+            log("Error at DeleteController: " + e.toString());
         }
         finally {
             request.getRequestDispatcher(url).forward(request, response);
