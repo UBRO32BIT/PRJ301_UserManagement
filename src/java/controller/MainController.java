@@ -20,13 +20,16 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "MainController", urlPatterns = {"MainController"})
 public class MainController extends HttpServlet {
     private static final String WELCOME_PAGE = "login.html";
+    private static final String UPDATE_PAGE = "update.jsp";
     
     private static final String LOGIN = "Login";
     private static final String SEARCH = "Search";
     private static final String DELETE = "Delete";
+    private static final String UPDATE = "Update";
     private static final String LOGIN_CONTROLLER = "LoginController";
     private static final String SEARCH_CONTROLLER = "SearchController";
     private static final String DELETE_CONTROLLER = "DeleteController";
+    private static final String UPDATE_CONTROLLER = "UpdateController";
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,6 +57,9 @@ public class MainController extends HttpServlet {
             }
             else if (DELETE.equals(action)) {
                 url = DELETE_CONTROLLER;
+            }
+            else if (UPDATE.equals(action)) {
+                url = UPDATE_PAGE;
             }
         }
         catch (Exception e) {

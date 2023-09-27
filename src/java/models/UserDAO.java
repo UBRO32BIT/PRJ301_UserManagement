@@ -18,9 +18,12 @@ import java.util.List;
  * @author ubro3
  */
 public class UserDAO {
+
     private static final String LOGIN = "SELECT UserID, fullName, roleID FROM tblUsers WHERE userID=? AND password=?";
     private static final String SEARCH = "SELECT userID, fullName, roleID FROM tblUsers WHERE fullName LIKE ?";
     private static final String DELETE = "DELETE FROM tblUsers WHERE userID=?";
+    private static final String UPDATE = "UPDATE tblUsers SET fullName=?, roleID=? WHERE userID=?";
+
     public UserDTO checkLogin(String userID, String pwd) throws SQLException {
         Connection conn = null;
         PreparedStatement ptm = null;
@@ -39,19 +42,23 @@ public class UserDAO {
                     user = new UserDTO(userID, fullName, roleID, "");
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if (rs!=null) rs.close();
-            if (ptm!=null) ptm.close();
-            if (conn!=null) conn.close();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ptm != null) {
+                ptm.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
         return user;
     }
-    
-    public List<UserDTO> getListUser(String search) throws SQLException{
+
+    public List<UserDTO> getListUser(String search) throws SQLException {
         Connection conn = null;
         PreparedStatement ptm = null;
         ResultSet rs = null;
@@ -70,19 +77,23 @@ public class UserDAO {
                     result.add(user);
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            if (rs!=null) rs.close();
-            if (ptm!=null) ptm.close();
-            if (conn!=null) conn.close();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ptm != null) {
+                ptm.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
         return result;
     }
-    
-    public boolean delete(String userID) throws SQLException{
+
+    public boolean delete(String userID) throws SQLException {
         Connection conn = null;
         PreparedStatement ptm = null;
         boolean result = false;
@@ -93,13 +104,42 @@ public class UserDAO {
                 ptm.setString(1, userID);
                 result = ptm.executeUpdate() > 0 ? true : false;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (ptm != null) {
+                ptm.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
-        finally {
-            if (ptm!=null) ptm.close();
-            if (conn!=null) conn.close();
+        return result;
+    }
+
+    public boolean update(String userID, String fullName, String roleID) throws Exception {
+        Connection conn = null;
+        PreparedStatement ptm = null;
+        boolean result = false;
+        try {
+            conn = DBUtils.getConnection();
+            if (conn != null) {
+                ptm = conn.prepareStatement(UPDATE);
+                ptm.setString(1, fullName);
+                ptm.setString(2, roleID);
+                ptm.setString(3, userID);
+                result = ptm.executeUpdate() > 0 ? true : false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (ptm != null) {
+                ptm.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
         return result;
     }

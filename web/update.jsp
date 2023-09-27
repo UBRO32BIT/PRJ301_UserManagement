@@ -12,12 +12,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>UPDATE</title>
     </head>
-    <% UserDTO user = (UserDTO) request.getAttribute("UPDATE_USER"); %>
     <body>
-        <form method="POST">
-            <input type="hidden" value="<%= user.getUserID() %>">
-            <input type="text" name="fullName" value="<%= user.getFullName() %>">
-            <input type="text" name="roleID" value="<%= user.getRoleID() %>">
+        <form action="UpdateController">
+            <input type="hidden" name="userID" value="<%= request.getParameter("userID") %>"><br>
+            <input type="hidden" name="search" value="<%= request.getParameter("search") %>"<br>
+            Full Name<input type="text" name="fullName" value="<%= request.getParameter("fullName") %>"><br>
+            Role ID<input type="text" name="roleID" value="<%= request.getParameter("roleID") %>"><br>
             <input type="submit" name="action" value="Update">
         </form>
     </body>

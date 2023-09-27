@@ -54,7 +54,7 @@
                         <td class="px-5"><%= user.getRoleID()%></td>
                         <td>
                             <div style="display: flex; min-width: 10vw; justify-content: space-evenly;">
-                                <a class="btn btn-primary">Edit</a>
+                                <a class="btn btn-primary" href="MainController?userID=<%= user.getUserID() %>&action=Update&fullName=<%= user.getFullName() %>&roleID=<%= user.getRoleID() %>&search=<%= search %>">Edit</a>
                                 <a class="btn btn-danger" href="MainController?userID=<%= user.getUserID() %>&action=Delete&search=<%= search%>">Delete</a>
                             </div>
                         </td>

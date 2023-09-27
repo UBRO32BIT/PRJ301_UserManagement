@@ -6,7 +6,6 @@
 package controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,24 +39,26 @@ public class UpdateController extends HttpServlet {
         String url = ERROR;
         try {
             String userID = request.getParameter("userID");
+            String fullName = request.getParameter("fullName");
+            String roleID = request.getParameter("roleID");
             UserDAO dao = new UserDAO();
             
             HttpSession session = request.getSession();
             UserDTO loginUser = (UserDTO) session.getAttribute("LOGIN_USER");
             if (loginUser != null) {
                 if (loginUser.getUserID().equals(userID)) {
-                    request.setAttribute("ERROR", "e may dang cam acc nay ai cho xoa ha");
+                    request.setAttribute("ERROR", "e may dang cam acc nay ai cho update ha");
                 }
                 else {
-                    boolean checkDelete = dao.delete(userID);
-                    if (checkDelete) {
+                    boolean checkUpdate = dao.update(userID, fullName, roleID);
+                    if (checkUpdate) {
                         url = SUCCESS;
                     }
                 }
             }
         }
         catch (Exception e) {
-            log("Error at DeleteController: " + e.toString());
+            log("Error at UpdateController: " + e.toString());
         }
         finally {
             request.getRequestDispatcher(url).forward(request, response);
