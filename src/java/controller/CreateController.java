@@ -6,7 +6,6 @@
 package controller;
 
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,15 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import models.UserDAO;
 import models.UserDTO;
+import models.UserError;
 
 /**
  *
  * @author ubro3
  */
-@WebServlet(name = "SearchController", urlPatterns = {"/SearchController"})
-public class SearchController extends HttpServlet {
-    private static final String ERROR="admin.jsp";
-    private static final String SUCCESS="admin.jsp";
+@WebServlet(name = "CreateController", urlPatterns = {"/CreateController"})
+public class CreateController extends HttpServlet {
+
+    private static final String ERROR = "register.jsp";
+    private static final String SUCCESS = "login.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,22 +38,42 @@ public class SearchController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = ERROR;
+        UserError u = new UserError();
         try {
-            String search = request.getParameter("search");
+            boolean check = true;
+            String userID = request.getParameter("userID");
+            String fullName = request.getParameter("fullName");
+            String roleID = request.getParameter("roleID");
+            String password = request.getParameter("password");
+            String rePassword = request.getParameter("rePassword");
             UserDAO dao = new UserDAO();
-            List<UserDTO> listUser = dao.getListUser(search);
-            if (listUser.size() > 0) {
-                request.setAttribute("LIST_USER", listUser);
-                url = SUCCESS;
+            if (userID.length() < 2 || userID.length() > 10) {
+                check = false;
+                u.setUserIDError("User ID chi cho phep tu 2-10 ki tu!");
             }
-        }
-        catch (Exception e) {
-            log("Error at SearchController: " + e.toString());
-        }
-        finally {
+            if (!password.equals(rePassword)) {
+                check = false;
+                u.setRePasswordError("2 mat khau khac nhau kia");
+            }
+            if (fullName.length() < 5 || fullName.length() > 20) {
+                check = false;
+                u.setFullNameError("Full Name chi cho phep tu 5-20 ki tu!");
+            }
+            if (check) {
+                boolean result = dao.insert(new UserDTO(userID, fullName, roleID, password));
+                if (result) {
+                    url = SUCCESS;
+                }
+            }
+        } catch (Exception e) {
+            log("Error at CreateController: " + e.toString());
+            if (e.toString().contains("duplicate")) {
+                u.setUserIDError("Duplicate UserID!");
+            }
+        } finally {
+            request.setAttribute("USER_ERROR", u);
             request.getRequestDispatcher(url).forward(request, response);
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

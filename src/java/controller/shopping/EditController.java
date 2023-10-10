@@ -3,26 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package controller.shopping;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import models.UserDAO;
-import models.UserDTO;
+import javax.servlet.http.HttpSession;
+import models.shopping.Cart;
+import models.shopping.Clothes;
 
 /**
  *
  * @author ubro3
  */
-@WebServlet(name = "SearchController", urlPatterns = {"/SearchController"})
-public class SearchController extends HttpServlet {
-    private static final String ERROR="admin.jsp";
-    private static final String SUCCESS="admin.jsp";
+@WebServlet(name = "EditController", urlPatterns = {"/EditController"})
+public class EditController extends HttpServlet {
+    
+    private final static String ERROR = "error.jsp";
+    private final static String SUCCESS = "viewCart.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,21 +40,29 @@ public class SearchController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String url = ERROR;
         try {
-            String search = request.getParameter("search");
-            UserDAO dao = new UserDAO();
-            List<UserDTO> listUser = dao.getListUser(search);
-            if (listUser.size() > 0) {
-                request.setAttribute("LIST_USER", listUser);
-                url = SUCCESS;
+            String id = request.getParameter("id");
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            HttpSession session = request.getSession();
+            Cart cart = (Cart) session.getAttribute("CART");
+            if (cart != null) {
+                Clothes clothes = new Clothes();
+                if (cart.getCart().containsKey(id)) {
+                    clothes = cart.getCart().get(id);
+                    clothes.setQuantity(quantity);
+                    boolean checkEdit = cart.edit(id, clothes);
+                    if (checkEdit) {
+                        url = SUCCESS;
+                        session.setAttribute("CART", cart);
+                    }
+                }
             }
         }
         catch (Exception e) {
-            log("Error at SearchController: " + e.toString());
+            log("Error at EditController: " + e.toString());
         }
         finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

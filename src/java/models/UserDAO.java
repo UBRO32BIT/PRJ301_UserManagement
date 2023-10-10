@@ -23,6 +23,7 @@ public class UserDAO {
     private static final String SEARCH = "SELECT userID, fullName, roleID FROM tblUsers WHERE fullName LIKE ?";
     private static final String DELETE = "DELETE FROM tblUsers WHERE userID=?";
     private static final String UPDATE = "UPDATE tblUsers SET fullName=?, roleID=? WHERE userID=?";
+    private static final String REGISTER ="INSERT INTO tblUsers(userID, fullName, roleID, password) VALUES (?,?,?,?)";
 
     public UserDTO checkLogin(String userID, String pwd) throws SQLException {
         Connection conn = null;
@@ -142,5 +143,30 @@ public class UserDAO {
             }
         }
         return result;
+    }
+    public boolean insert(UserDTO user) throws SQLException, ClassNotFoundException {
+        boolean check = false;
+        Connection conn = null;
+        PreparedStatement ptm = null;
+        try {
+            conn = DBUtils.getConnection();
+            if (conn != null) {
+                ptm = conn.prepareStatement(REGISTER);
+                ptm.setString(1, user.getUserID());
+                ptm.setString(2, user.getFullName());
+                ptm.setString(3, user.getRoleID());
+                ptm.setString(4, user.getPassword());
+                check = ptm.executeUpdate()>0 ? true:false;
+            }
+        } 
+        finally {
+            if (ptm != null) {
+                ptm.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
+        }
+        return check;
     }
 }

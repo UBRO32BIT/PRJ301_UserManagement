@@ -21,13 +21,17 @@
                 if (error == null) error="";
                 
                 UserDTO loginUser = (UserDTO) session.getAttribute("LOGIN_USER");
-                if (loginUser == null) {
-                    loginUser = new UserDTO();
+                if (loginUser == null || !"AD".equals(loginUser.getRoleID())) {
+                    response.sendRedirect("login.html");
+                    return;
                 }
                 String search = request.getParameter("search");
                 if (search == null) search = "";
             %>
             <h1>Welcome! <%= loginUser.getFullName()%></h1>
+            <form action="MainController">
+                <input type="submit" name="action" value="Logout">
+            </form>
             <form action="MainController">
                 Search<input type="text" name="search" value="<%= search %>" required="">
                 <input type="submit" name="action" value="Search">

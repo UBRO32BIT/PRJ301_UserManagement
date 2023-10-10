@@ -3,27 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package controller.shopping;
 
 import java.io.IOException;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import models.UserDAO;
-import models.UserDTO;
+import javax.servlet.http.HttpSession;
+import models.shopping.Cart;
+import models.shopping.Clothes;
 
 /**
  *
  * @author ubro3
  */
-@WebServlet(name = "SearchController", urlPatterns = {"/SearchController"})
-public class SearchController extends HttpServlet {
-    private static final String ERROR="admin.jsp";
-    private static final String SUCCESS="admin.jsp";
-
+@WebServlet(name = "AddController", urlPatterns = {"/AddController"})
+public class AddController extends HttpServlet {
+    private static final String ERROR = "error.jsp";
+    private static final String SUCCESS = "shopping.jsp";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -38,21 +37,31 @@ public class SearchController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String url = ERROR;
         try {
-            String search = request.getParameter("search");
-            UserDAO dao = new UserDAO();
-            List<UserDTO> listUser = dao.getListUser(search);
-            if (listUser.size() > 0) {
-                request.setAttribute("LIST_USER", listUser);
-                url = SUCCESS;
+            String clothesString = request.getParameter("cmbClothes");
+            String tmp[] = clothesString.split("-");
+            String id = tmp[0];
+            String name = tmp[1];
+            double price = Double.parseDouble(tmp[2]);
+            int quantity = Integer.parseInt(request.getParameter("cmbQuantity"));
+            
+            Clothes clothes = new Clothes(id, name, price, quantity);
+            HttpSession session = request.getSession();
+            Cart cart = (Cart) session.getAttribute("CART");
+            if (cart == null) {
+                cart = new Cart();
             }
+            cart.add(clothes);
+            session.setAttribute("CART", cart);
+            url = SUCCESS;
+            String message = "DA CHON THANH CONG " + quantity + " " + name;
+            request.setAttribute("SHOPPING_MESSAGE", message);
         }
         catch (Exception e) {
-            log("Error at SearchController: " + e.toString());
+            log("Error at Add Controller: " + e.toString());
         }
         finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -6,23 +6,23 @@
 package controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import models.UserDAO;
-import models.UserDTO;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author ubro3
  */
-@WebServlet(name = "SearchController", urlPatterns = {"/SearchController"})
-public class SearchController extends HttpServlet {
-    private static final String ERROR="admin.jsp";
-    private static final String SUCCESS="admin.jsp";
+@WebServlet(name = "LogoutController", urlPatterns = {"/LogoutController"})
+public class LogoutController extends HttpServlet {
+
+    private static final String ERROR = "login.html";
+    private static final String SUCCESS = "login.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,21 +38,16 @@ public class SearchController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String url = ERROR;
         try {
-            String search = request.getParameter("search");
-            UserDAO dao = new UserDAO();
-            List<UserDTO> listUser = dao.getListUser(search);
-            if (listUser.size() > 0) {
-                request.setAttribute("LIST_USER", listUser);
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
                 url = SUCCESS;
             }
+        } catch (Exception e) {
+            log("Error at LogoutController: " + e.toString());
+        } finally {
+            response.sendRedirect(url);
         }
-        catch (Exception e) {
-            log("Error at SearchController: " + e.toString());
-        }
-        finally {
-            request.getRequestDispatcher(url).forward(request, response);
-        }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

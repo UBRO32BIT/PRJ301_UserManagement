@@ -14,13 +14,19 @@
     </head>
     <%
         UserDTO user = (UserDTO) session.getAttribute("LOGIN_USER");
-        if (user == null) return;
+        if (user == null || !"US".equals(user.getRoleID())) {
+            response.sendRedirect("login.html");
+            return;
+        }
     %>
     <body>
         <h1>HELLO CAC USER!</h1>
-        User ID: <%= user.getUserID() %><br>
-        Full name: <%= user.getFullName() %><br>
-        Role: <%= user.getRoleID() %><br>
+        User ID: <%= user.getUserID()%><br>
+        Full name: <%= user.getFullName()%><br>
+        Role: <%= user.getRoleID()%><br>
         Password:
+            <form action="MainController">
+                <input type="submit" name="action" value="Logout">
+            </form>
     </body>
 </html>
